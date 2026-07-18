@@ -8,12 +8,12 @@ Every Dockerfile instruction produces a layer. The builder compares each instruc
 
 ## 2. Cache Invalidation Rules
 
-| Instruction | Cache invalidation trigger |
-|---|---|
-| `COPY` / `ADD` (and `RUN --mount=type=bind`) | Invalidates based on a **file-metadata checksum** — file modification time (mtime) alone does **not** invalidate it. |
-| Plain `RUN` | Compared only by the **command string**, never by what actually changed inside the container — a `RUN apt-get install` layer can silently stay stale forever. |
-| `WORKDIR` | Cache validity is tied to the `SOURCE_DATE_EPOCH` build arg — changing it invalidates WORKDIR and everything after it. |
-| Build secrets (`--secret`) | Never part of the cache — changing a secret's value alone won't bust the cache. Pair it with a changing build arg (e.g. `CACHEBUST`) if you need that. |
+| Instruction                                  | Cache invalidation trigger                                                                                                                                    |
+|----------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `COPY` / `ADD` (and `RUN --mount=type=bind`) | Invalidates based on a **file-metadata checksum** — file modification time (mtime) alone does **not** invalidate it.                                          |
+| Plain `RUN`                                  | Compared only by the **command string**, never by what actually changed inside the container — a `RUN apt-get install` layer can silently stay stale forever. |
+| `WORKDIR`                                    | Cache validity is tied to the `SOURCE_DATE_EPOCH` build arg — changing it invalidates WORKDIR and everything after it.                                        |
+| Build secrets (`--secret`)                   | Never part of the cache — changing a secret's value alone won't bust the cache. Pair it with a changing build arg (e.g. `CACHEBUST`) if you need that.        |
 
 ---
 
@@ -45,10 +45,10 @@ Ways to break/clear cache:
 
 BuildKit's internal cache is automatic; external caches must be explicitly exported via `--cache-to` and imported via `--cache-from` — essential for CI/CD where builders are ephemeral.
 
-| Backend | Status |
-|---|---|
-| inline, registry, local, gha | Available |
-| s3, azblob | Unreleased |
+| Backend                      | Status     |
+|------------------------------|------------|
+| inline, registry, local, gha | Available  |
+| s3, azblob                   | Unreleased |
 
 - **`mode=min`** (default): caches only layers in the final image.
 - **`mode=max`**: caches all intermediate layers too — larger, but more cache hits.
@@ -93,6 +93,25 @@ Tags (e.g. `postgres:17`, `alpine:3.21`) are **mutable local pointers, not fixed
 - For critical/production base images, pin to an exact digest (`image@sha256:...`) instead of relying on a tag alone.
 
 ---
+
+
+## 10. Docker Build and Docker Compose 
+ A bare "docker build" and "docker compose up" are two separate, disconnected things here:
+
+1. docker build (run without -t <tag>, or from outside compose) produces an image, but if it's not tagged with exactly the name compose
+   expects (<project>-<service>, here sb-heap-obeservability-app:latest), compose never sees it — it just sits as a dangling/differently-tagged image.
+2. docker compose up does not rebuild automatically. It only builds an image for a service if no image with that tag exists yet. If sb-heap-obeservability-app:latest
+   already exists (from any earlier build), up just reuses it — it does not diff your source against the image.
+3. On top of that, there was already a stopped container (sb-heap-app, exited 16h ago) sitting around from a previous run. docker compose up without --force-recreate
+   will happily restart an existing container as-is rather than create a new one from a newer image, if it doesn't detect the image changed.
+
+That's consistent with what I found: the image was last actually built 2026-07-17T14:53, well before your new ThreadLocalLeak* files existed on disk — so no rebuild in
+between had ever produced a fresh image, regardless of how many times docker compose up was run.
+
+The fix is what I just did: docker compose build --no-cache app (or the lighter docker compose build app, cache is fine here since COPY src src correctly invalidates on
+real content changes) followed by docker compose up -d, which recreates the container from the new image. Going forward, docker compose up --build in one shot does both
+steps and avoids this trap.
+
 
 ## 9. Practical Checklist
 

@@ -14,11 +14,11 @@ It's the default builder for both Docker Desktop and Docker Engine.
 
 Compared to the legacy builder, BuildKit improves things in three main areas:
 
-| Area | Improvement |
-|---|---|
-| **Performance** | Uses a fully concurrent build graph solver — detects and skips unused build stages, runs independent build stages in parallel, and only transfers files from your build context that actually changed between builds rather than re-reading/uploading everything each time. |
-| **Storage management** | (see cache backends / GC — covered in the Image Cache & Build note) |
-| **Extensibility** | Frontends allow build definitions beyond the Dockerfile format (see below). |
+| Area                   | Improvement                                                                                                                                                                                                                                                                 |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Performance**        | Uses a fully concurrent build graph solver — detects and skips unused build stages, runs independent build stages in parallel, and only transfers files from your build context that actually changed between builds rather than re-reading/uploading everything each time. |
+| **Storage management** | (see cache backends / GC — covered in the Image Cache & Build note)                                                                                                                                                                                                         |
+| **Extensibility**      | Frontends allow build definitions beyond the Dockerfile format (see below).                                                                                                                                                                                                 |
 
 ---
 

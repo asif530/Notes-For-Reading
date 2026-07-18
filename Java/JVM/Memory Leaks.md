@@ -459,14 +459,14 @@ If `r` is stored somewhere long-lived, it is retained forever — and `obj` surv
 
 Suppose heap is capped with `-Xmx2G`.
 
-| Stage | Effect |
-|---|---|
-| 1. More Frequent GC | GC notices memory pressure — runs every 2 sec instead of every 10 sec. CPU increases, app slows. |
-| 2. Longer GC Pauses | GC has to scan more objects. Pause time increases. Latency increases. |
-| 3. Throughput Drops | CPU: 70% → 85% → 95%. Most of it spent on GC, not serving requests. |
-| 4. Full GC | Full GC runs repeatedly. Stop-the-world. App freezes briefly. |
-| 5. OutOfMemoryError | `java.lang.OutOfMemoryError: Java heap space`, or `GC overhead limit exceeded`. |
-| 6. Application Crash | If uncaught, JVM exits. Kubernetes/systemd restarts it. Problem repeats. |
+| Stage                | Effect                                                                                           |
+|----------------------|--------------------------------------------------------------------------------------------------|
+| 1. More Frequent GC  | GC notices memory pressure — runs every 2 sec instead of every 10 sec. CPU increases, app slows. |
+| 2. Longer GC Pauses  | GC has to scan more objects. Pause time increases. Latency increases.                            |
+| 3. Throughput Drops  | CPU: 70% → 85% → 95%. Most of it spent on GC, not serving requests.                              |
+| 4. Full GC           | Full GC runs repeatedly. Stop-the-world. App freezes briefly.                                    |
+| 5. OutOfMemoryError  | `java.lang.OutOfMemoryError: Java heap space`, or `GC overhead limit exceeded`.                  |
+| 6. Application Crash | If uncaught, JVM exits. Kubernetes/systemd restarts it. Problem repeats.                         |
 
 <details>
 <summary>📎 Show the illustrative heap-growth timeline</summary>
@@ -488,13 +488,13 @@ Eventually      2 GB (heap full)
 <a id="how-to-detect"></a>
 ## 🧪 How to Detect Memory Leaks
 
-| Tool / Technique | Purpose |
-|---|---|
-| Eclipse MAT / VisualVM | Heap dump analysis — find objects retaining the most memory |
-| `jmap` / `jcmd` | Capture heap dumps / inspect JVM state |
-| JFR + JMC | Profile allocations and object lifetimes |
-| GC logs | Observe heap growth and increasing GC frequency |
-| Micrometer + Prometheus + Grafana | Monitor JVM heap usage over time |
+| Tool / Technique                  | Purpose                                                     |
+|-----------------------------------|-------------------------------------------------------------|
+| Eclipse MAT / VisualVM            | Heap dump analysis — find objects retaining the most memory |
+| `jmap` / `jcmd`                   | Capture heap dumps / inspect JVM state                      |
+| JFR + JMC                         | Profile allocations and object lifetimes                    |
+| GC logs                           | Observe heap growth and increasing GC frequency             |
+| Micrometer + Prometheus + Grafana | Monitor JVM heap usage over time                            |
 
 A classic sign is the used heap after each major GC gradually increasing instead of returning to a stable baseline:
 
@@ -510,3 +510,311 @@ If the application workload is similar but the post-GC heap keeps growing, it's 
 ## 🎯 Interview Summary
 
 > A memory leak in Java occurs when objects that are no longer needed remain reachable, so the Garbage Collector cannot reclaim them. Garbage collection only removes unreachable objects; it cannot determine whether a reachable object is still logically useful. Common causes include static collections, unbounded caches, ThreadLocal misuse, listener registration without deregistration, singleton objects retaining data, JPA persistence contexts, classloader leaks, and improperly managed thread pools. If left unresolved, memory leaks increase heap usage, trigger more frequent and longer GC cycles, reduce application throughput, and eventually cause `OutOfMemoryError` or severe service degradation. The most effective way to diagnose leaks is to compare heap dumps over time and identify objects that continuously accumulate and remain strongly reachable.
+
+---
+
+<details>
+<summary>📎 Show detailed walkthroughs (causes 1–6)</summary>
+
+<details>
+<summary><strong>1. ThreadLocal Leak</strong></summary>
+
+First understand **why ThreadLocal exists.**
+
+Normally a method receives data through parameters.
+Sometimes many methods need the same information (current user, request ID, tenant ID, transaction ID).
+Instead of passing it through every method,
+
+A(user) ──> B(user) ──> C(user) ──> D(user)
+
+Java provides **ThreadLocal**. Every thread has its own local thread local.
+    ThreadLocal<User> currentUser = new ThreadLocal<>();
+
+At request start : currentUser.set(user); // set value to the local context of the current thread
+
+Later in any service method, you can retrieve it without passing it through parameters:
+    User u = currentUser.get();
+
+---
+## Where is the object actually stored?
+Many people think ThreadLocal stores the object. It doesn't. The object is stored **inside the Thread itself**.
+Each thread has its own `ThreadLocalMap`.
+
+```
+Worker Thread
+
+│
+├── Stack
+├── Program Counter
+├── ThreadLocalMap
+│      │
+│      └── currentUser -> User("John")
+```
+
+
+---
+
+## What does "thread never dies" mean?
+
+Suppose Spring Boot uses Tomcat. Tomcat creates worker threads.
+```
+Thread-1
+Thread-2
+Thread-3
+...
+Thread-200
+```
+
+These are created **once**. Tomcat can be configured to limit the number of worker threads creation. They stay alive for the whole lifetime of the application. 
+They don't get destroyed after every HTTP request. By default tomcat uses a **thread pool** and it creates a fixed number of threads to handle requests.
+When a request comes in, it is assigned to an available thread from the pool. After the request is processed, the thread goes back to the pool 
+and waits for the next request.
+
+Example
+
+```
+Request-1
+    ↓
+Thread-5 handles it
+    ↓
+Request completed
+    ↓
+Thread-5 goes idle
+    ↓
+New request arrives
+    ↓
+Thread-5 handles it again
+```
+
+---
+
+Suppose request 1 : currentUser.set(john);
+Forgot : currentUser.remove();
+Now
+```
+Thread-5
+   ↓
+ThreadLocalMap
+   ↓
+John
+```
+Thread-5 is done and waiting for another request.
+GC checks
+
+```
+GC Root
+  ↓
+Thread
+  ↓
+ThreadLocalMap
+  ↓
+John
+```
+John is still reachable. Cannot collect.
+Next request
+
+```
+Thread-5
+   ↓
+stores David
+```
+Maybe John's object is replaced, maybe multiple ThreadLocals accumulate depending on usage. More importantly, if the stored object references 
+a large object graph (security context, request data, buffers), it remains alive as long as the thread retains it.
+
+Correct usage
+
+```java
+try {
+    currentUser.set(user);
+
+    ...
+}
+finally {
+    currentUser.remove();
+}
+```
+
+</details>
+
+<details>
+<summary><strong>2. Cache Without Eviction</strong></summary>
+
+This does **NOT** mean Redis. It means an **in-memory Java cache** — a plain `Map` used to avoid hitting the database repeatedly.
+Map<Long, Product> cache = new HashMap<>();
+````
+Request -> Database -> Product -> Store in HashMap
+````
+Later requests skip the database entirely:
+```
+Request -> HashMap -> Return product
+```
+Much faster. Every request calls: cache.put(id, product);
+Nothing ever calls: cache.remove(id);
+After a year: HashMap -> 10 million Products
+Every `Product` remains reachable, so GC cannot remove them. Memory leak.
+---
+Real cache libraries solve this with size limits and expiry — for example Caffeine:
+
+```java
+Cache<Long, Product> cache =
+    Caffeine.newBuilder()
+            .maximumSize(10000)
+            .expireAfterWrite(Duration.ofMinutes(30))
+            .build();
+```
+After 30 minutes, Old entries disappear . No leak.
+
+---
+## What about Redis?
+Redis is a **separate process**. Your JVM heap does not contain Redis's data, so Redis itself isn't causing a Java heap leak — 
+although your Redis server can run out of memory if you never evict data there either.
+
+</details>
+
+<details>
+<summary><strong>3. Infinite Growing Collections</strong></summary>
+
+```java
+@Component
+public class Logger {
+    List<Log> logs = new ArrayList<>();
+}
+```
+
+Every request appends: logs.add(log);
+Nothing ever removes old logs.  
+```
+Application -> Singleton Logger -> ArrayList -> Log1 → Log2 → Log3 → ... → Log5000000
+```
+Memory keeps increasing.
+**"An application restart clears everything.
+"** But a memory leak exists **while the application is running**. 
+Suppose a production server runs for 90 days: memory increases every day, and it crashes on day 20. Nobody cares that restarting fixes it temporarily.
+
+Another real example:
+List<Order> recentOrders = new ArrayList<>();
+Every order calls `recentOrders.add(order)`, but nothing ever calls `clear()`. Eventually the list holds 20 million `Order` objects and the heap is exhausted.
+
+</details>
+
+<details>
+<summary><strong>4. ExecutorService Not Shutdown</strong></summary>
+
+ExecutorService executor = Executors.newFixedThreadPool(10);
+
+Executor -> Thread-1 -> Thread-2 -> Thread-3 ...-> Thread 10
+Each thread owns a stack, a `ThreadLocalMap`, native resources, and buffers.
+
+Now imagine an executor created inside a method instead of shared:
+
+```java
+public void generateReport() {
+    ExecutorService executor = Executors.newFixedThreadPool(5);
+    executor.submit(...);
+}
+```
+
+Every call creates 5 new threads. The method finishes, but `executor.shutdown()` is forgotten — so those threads stay alive, waiting for more tasks. 
+Call this method 100 times and you have 500 live threads, each consuming memory and native resources.
+This is more accurately a **thread/resource leak**, which often leads to memory pressure.
+
+Correct usage:
+
+```java
+ExecutorService executor = Executors.newFixedThreadPool(5);
+try {
+    ...
+} finally {
+    executor.shutdown();
+}
+```
+Even better, create one shared executor and reuse it instead of creating new pools repeatedly.
+
+</details>
+
+<details>
+<summary><strong>5. Improper equals()/hashCode()</strong></summary>
+
+```java
+class User {
+    Long id;
+}
+```
+
+No `equals()`. No `hashCode()`.
+
+```java
+Map<User, String> map = new HashMap<>();
+map.put(new User(1L), "John");
+...
+map.remove(new User(1L));
+```
+
+The developer expects this to remove the entry. It doesn't — because `new User(1)` and `new User(1)` are different object references.
+Without a matching `equals()`/`hashCode()`, the `HashMap` cannot find the original key, so the entry remains forever.
+
+---
+
+Correct:
+
+```java
+@Override
+public boolean equals(Object o) {
+    return id.equals(((User) o).id);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(id);
+}
+```
+
+Now `remove()` works correctly.
+This isn't a leak by itself, but it can *cause* one if your application expects entries to be removed but they never are.
+
+</details>
+
+<details>
+<summary><strong>6. ClassLoader Leak</strong></summary>
+
+This is one of the hardest JVM topics. First, understand what a ClassLoader does.
+When the JVM starts, `App.class` is just a file on disk. The JVM loads it:
+    App.class -> ClassLoader -> Class object in memory
+Every class — `User`, `Order`, `Product`, `Service`, `Controller` — is loaded by a ClassLoader.
+
+Imagine Tomcat loading `MyApplication` using an `ApplicationClassLoader`:
+    **ClassLoader -> Controller -> Service -> Repository -> Static Fields**
+Everything belongs to that ClassLoader.
+
+Now redeploy the application. The old application should disappear and the new one loads:
+    **Old ClassLoader -> should die**
+
+But suppose a `static Map cache`, a `ThreadLocal`, or a `Timer` still references an object from the old application:
+    **Thread -> Old Object -> Old class -> Old ClassLoader**
+The old ClassLoader is still reachable — so the old `Controller`, `Service`, `Repository`, cache, and static variables all remain in memory too.
+Deploy again: another ClassLoader. Deploy again: another. Eventually:
+
+```
+ClassLoader1
+ClassLoader2
+ClassLoader3
+ClassLoader4
+...
+```
+
+All remain. Heap or Metaspace fills.
+This was a very common issue in older application servers (Tomcat, WebLogic, JBoss) that supported hot redeployment.
+
+</details>
+
+</details>
+
+The memory leak causes you'll encounter in real projects are:
+
+1. **Static collections or singleton collections that grow without bounds** ⭐⭐⭐⭐⭐
+2. **Cache without expiration (e.g., plain `HashMap` used as a cache)** ⭐⭐⭐⭐⭐
+3. **ThreadLocal not cleaned up in thread pools** ⭐⭐⭐⭐
+4. **ExecutorService or threads not shut down/reused properly** ⭐⭐⭐⭐
+5. **Hibernate/JPA persistence context growing during batch processing** ⭐⭐⭐⭐
+6. **Listeners/callbacks not deregistered** ⭐⭐⭐
+7. **ClassLoader leaks** (mainly in servlet containers and application servers with redeployments) ⭐⭐

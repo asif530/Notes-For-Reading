@@ -8,11 +8,11 @@ Each Dockerfile instruction becomes a layer; layers are reused from cache if the
 
 **Q: What actually invalidates a cache layer?**
 
-| Instruction | Invalidation trigger |
-|---|---|
-| `COPY` / `ADD` | A checksum of file metadata (not mtime). |
-| `RUN` | Only the literal command string is compared — Docker never inspects what the command changed, so a `RUN apt-get install` can reuse a stale layer indefinitely. |
-| `WORKDIR` | Additionally sensitive to `SOURCE_DATE_EPOCH`. |
+| Instruction    | Invalidation trigger                                                                                                                                           |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `COPY` / `ADD` | A checksum of file metadata (not mtime).                                                                                                                       |
+| `RUN`          | Only the literal command string is compared — Docker never inspects what the command changed, so a `RUN apt-get install` can reuse a stale layer indefinitely. |
+| `WORKDIR`      | Additionally sensitive to `SOURCE_DATE_EPOCH`.                                                                                                                 |
 
 **Q: Difference between `--pull` and `--no-cache` on `docker build`?**
 
