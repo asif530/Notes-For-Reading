@@ -45,11 +45,12 @@ Hibernate cannot do its job properly without a persistence context. The persiste
 Here is exactly what the persistence context does for Hibernate:
 
 * **Entity Lifecycle Management:** It tracks whether an object is *Transient* (new), *Managed* (saved in the context), *Detached* (no longer tracked), or *Removed*.
-* **Dirty Checking:** Hibernate monitors the objects in the context. When your transaction ends, Hibernate looks at the context, notices if any object fields changed, and automatically writes the `UPDATE` SQL statement for you.
+* **Dirty Checking:** Hibernate monitors the objects in the context. At flush time — which can happen multiple times during a transaction (before a query, on a manual `flush()`, or right before commit), not just when the transaction ends — Hibernate looks at the context, notices if any object fields changed, and automatically writes the `UPDATE` SQL statement for you.
 * **Predictable SQL (Batching & De-duplication):** If you ask Hibernate to find the same User object three times in one transaction, it hits the database the first time, loads it into the persistence context, and hands you the cached copy for the next two requests. This prevents unnecessary database spam.
 
 ### Can a Persistence Context Exist Without Hibernate?
 
-**Yes.** The "Persistence Context" is a conceptual requirement defined by the JPA specification. While Hibernate is the most popular framework to implement it, you could swap Hibernate out for EclipseLink or OpenJPA. Those frameworks would *also* create and use a persistence context.
+**Yes.** The "Persistence Context" is a conceptual requirement defined by the JPA specification. While Hibernate is the most popular framework to implement it, you could swap Hibernate out for EclipseLink or OpenJPA. 
+Those frameworks would *also* create and use a persistence context.
 
 > **Summary:** The persistence context is the environment. Hibernate is the engine that runs inside it to map your Java objects to database rows.

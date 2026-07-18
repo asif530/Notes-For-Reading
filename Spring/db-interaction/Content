@@ -1,0 +1,7 @@
+Persistence Context
+Hibernate
+Dirty-Check
+Dirty-Read-Write
+Isolation Level (ACID)
+READ_UNCOMMITTED, READ_COMMITTED (Transactional)
+Write Locks (Exclusive Locks)
