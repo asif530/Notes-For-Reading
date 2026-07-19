@@ -1,4 +1,5 @@
-# Sidecar Pattern
+# Sidecar Pattern 
+# Sample Code: https://github.com/asif530/SB-Outbox-Sidecar
 
 ## What is the Sidecar Pattern?
 
@@ -54,7 +55,7 @@ Instead of baking these concerns into **every service**, we offload them to a **
 
 ## Real-World Examples
 
-### 🔹 Service Mesh (Most Important)
+### 🔹 Service Mesh (Most Important) 
 
 * **Istio**
 * **Linkerd**
