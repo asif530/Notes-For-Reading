@@ -5,6 +5,7 @@
 
 The **Sidecar pattern** is a **deployment pattern** where a helper component (the *sidecar*) runs **alongside a main application**, 
 sharing the same lifecycle, network, and sometimes storage. It is usually deployed inside the same pod of the main application container
+**Its a deployment pattern.**
 
 Think of it as:
 
@@ -13,6 +14,27 @@ Think of it as:
 📦 In containerized environments (Docker / Kubernetes), the sidecar is typically **another container in the same Pod**.
 
 ---
+
+## Architecture
++-------------------------------------+
+|               Pod                   |
+|                                     |
+| +-------------------------------+   |
+| | Spring Boot Application       |   |
+| +-------------------------------+   |
+|                                     |
+| +-------------------------------+   |
+| | Sidecar                       |   |
+| | Envoy / Fluent Bit / OTEL     |   |
+| +-------------------------------+   |
++-------------------------------------+
+
+Both containers
+
+start together
+stop together
+share networking
+may share storage
 
 ## Why do we need it?
 

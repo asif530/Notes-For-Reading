@@ -3,7 +3,7 @@
 ## What is the Outbox Pattern?
 
 The **Outbox Pattern** is a **data consistency pattern** used to reliably publish events **after a database transaction succeeds**, 
-without using distributed transactions (2PC).
+without using distributed transactions (2PC). **It is a transactional pattern.** 
 
 It solves:
 
