@@ -32,6 +32,19 @@ Deployment Architecture
 Sidecar, Ambassador, Service Mesh
 ```
 
+| Pattern              | Category                        |
+| -------------------- | ------------------------------- |
+| MVC                  | Presentation architecture       |
+| Layered Architecture | Architectural pattern           |
+| Hexagonal            | Architectural pattern           |
+| Clean Architecture   | Architectural pattern           |
+| Event Driven         | Architectural style             |
+| Microservices        | Architectural style             |
+| Saga                 | Distributed transaction pattern |
+| Repository           | Design pattern                  |
+| CQRS                 | **Architectural pattern**       |
+| Event Sourcing       | Persistence pattern             |
+
 Notice that **Hexagonal** and **Event-Driven** are not competitors. They can be used together as they solve different problems
 
 ---

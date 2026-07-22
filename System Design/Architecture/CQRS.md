@@ -220,22 +220,10 @@ Already denormalized. Reads become much faster.
 
 # Example Architecture
 
-Traditional
-
-```
-               Application
-
-                     |
-
-               PostgreSQL
-```
-
+Traditional : Application -> PostgreSQL
 Everything shares one model.
 
----
-
-CQRS
-
+CQRS:
 ```
                Client
 
@@ -254,162 +242,69 @@ CQRS
 ```
 
 Notice
-
 Writes go to PostgreSQL.
-
 Reads come from Elasticsearch.
-
 This is extremely common.
 
 ---
-
 # Wait...
 
-How does Elasticsearch know new data was written?
-
-Excellent question.
+# How does Elasticsearch know new data was written?
 
 Usually through **events**.
 
 ```
 Create Order
-
-↓
-
+        ↓
 PostgreSQL updated
-
-↓
-
+        ↓
 Publish OrderCreated Event
-
-↓
-
+        ↓
 Consumer receives event
-
-↓
-
+        ↓
 Update Elasticsearch
 ```
+Now PostgreSQL is the source of truth.
+Elasticsearch is only a read model.
 
-Now
-
-```
-PostgreSQL
-```
-
-is the source of truth.
-
-```
-Elasticsearch
-```
-
-is only a read model.
-
----
 
 # Is CQRS Event Driven?
 
-This is where many beginners get confused.
-
-**CQRS itself is NOT an event-driven architecture.**
-
+This is the confused part. **CQRS itself is NOT an event-driven architecture.**
 It is an **architectural pattern** whose goal is to separate read and write responsibilities.
 
-However...
-
-CQRS is **very commonly combined** with Event-Driven Architecture (EDA).
-
+However... CQRS is **very commonly combined** with Event-Driven Architecture (EDA).
 ```
-Command
-
-↓
-
-Database Updated
-
-↓
-
-Publish Event
-
-↓
-
-Read Model Updated
+Command -> Database Updated -> Publish Event -> Read Model Updated
 ```
-
-The event is simply a synchronization mechanism.
-
-You can implement CQRS without events by updating both models synchronously, but events make the two sides loosely coupled and scalable.
+The event is simply a synchronization mechanism. You can implement CQRS without events by updating both models synchronously, 
+but events make the two sides loosely coupled and scalable.
 
 ---
 
 # Where does CQRS fit?
-
-| Pattern              | Category                        |
-| -------------------- | ------------------------------- |
-| MVC                  | Presentation architecture       |
-| Layered Architecture | Architectural pattern           |
-| Hexagonal            | Architectural pattern           |
-| Clean Architecture   | Architectural pattern           |
-| Event Driven         | Architectural style             |
-| Microservices        | Architectural style             |
-| Saga                 | Distributed transaction pattern |
-| Repository           | Design pattern                  |
-| CQRS                 | **Architectural pattern**       |
-| Event Sourcing       | Persistence pattern             |
-
-Notice:
-
 CQRS is **not** a transaction pattern and **not** inherently an event pattern.
+See [ChoosingArchitecture.md](ChoosingArchitecture.md)
 
 ---
 
 # Benefits
-
 ✅ Read and write models optimized independently.
-
 ✅ Scale reads separately from writes.
-
 ```
 10 Write Servers
-
 100 Read Servers
 ```
-
 Possible with CQRS.
-
----
-
 Different databases can be used.
-
 ```
-Writes
-
-↓
-
-PostgreSQL
-
-Reads
-
-↓
-
-Redis
-
-↓
-
-Elasticsearch
-
-↓
-
-MongoDB
+Writes -> PostgreSQL
+Reads -> Redis -> Elasticsearch / MongoDb
 ```
 
 Each chosen for its strengths.
-
----
-
 Business logic stays focused.
-
 Commands only modify state.
-
 Queries only retrieve state.
 
 ---
@@ -426,35 +321,17 @@ You now maintain
 * Event handling (if used)
 * Monitoring
 * Retry mechanisms
-
----
-
 Read data may be slightly stale.
 
 ```
-Write
-
-↓
-
-Event Published
-
-↓
-
-2 seconds later
-
-↓
-
-Read model updated
+Write -> Event Published -> (2 seconds later) -> Read model updated
 ```
-
 For those two seconds, a query might not reflect the latest write. This is called **eventual consistency**, and it's an intentional trade-off in many CQRS systems.
 
 ---
-
 # Real-world example
-
 A common e-commerce architecture looks like this:
-
+It is using CQRS + Event Sourcing + Event-Driven Architecture.
 ```
 Customer Places Order
           |
@@ -473,9 +350,7 @@ PostgreSQL         Elasticsearch
                          |
                     Customer Search
 ```
-
 The command side guarantees correctness (inventory, payment, transactions). The query side is optimized for searching and displaying orders quickly.
-
 ---
 
 ## Mental model to remember
