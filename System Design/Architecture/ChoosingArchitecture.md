@@ -271,6 +271,3 @@ Keep the architecture as simple as possible.
 
 This illustrates an important principle: **architecture is a response to requirements and constraints**. 
 Start with the simplest design that meets today's needs, and introduce additional architectural patterns only when they solve a real problem you're encountering.
-
-
-
