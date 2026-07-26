@@ -7,3 +7,8 @@ Both Filters and Interceptors help process **HTTP requests**, but they work at d
 
 Use Filters for generic request processing before Spring MVC, and 
     Interceptors when you need access to Spring components and controller execution.
+
+For reference check this repo:
+https://github.com/asif530/SB-Filter-Interceptor
+https://github.com/asif530/interceptor-filter
+
