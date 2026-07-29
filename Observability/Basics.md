@@ -3,27 +3,36 @@ https://archive.is/EAc1x
 
 ## Summary: Grafana Observability Stack
 
-This article makes the case for Grafana's open-source observability stack as a unified alternative to fragmented monitoring tools or expensive vendor-locked platforms like Datadog, New Relic, or Splunk.
+This article makes the case for Grafana's open-source observability stack as a unified alternative to fragmented monitoring tools or expensive vendor-locked 
+platforms like Datadog, New Relic, or Splunk.
 
 **Core architecture and components**
 
 The stack unifies the three pillars of observability — metrics, logs, and traces — through five main pieces working together:
 
-- **Alloy** is the telemetry collection layer (replacing the older Grafana Agent), built on OpenTelemetry standards. It auto-discovers services in Kubernetes/Docker, routes metrics to Mimir, logs to Loki, and traces to Tempo, and injects metadata so everything can be cross-referenced later.
-- **Loki** handles log storage but only indexes metadata labels rather than full log text, which keeps storage costs low while still allowing fast filtering via its Prometheus-like query language, LogQL.
-- **Tempo** manages distributed tracing across microservices, using cheap object storage and schema-free ingestion so it can scale to high trace volumes without heavy indexing overhead.
+- **Alloy** is the telemetry collection layer (replacing the older Grafana Agent), built on OpenTelemetry standards. It auto-discovers services in Kubernetes/Docker, 
+  routes metrics to Mimir, logs to Loki, and traces to Tempo, and injects metadata so everything can be cross-referenced later.
+- **Loki** handles log storage but only indexes metadata labels rather than full log text, which keeps storage costs low while still allowing 
+  fast filtering via its Prometheus-like query language, LogQL.
+- **Tempo** manages distributed tracing across microservices, using cheap object storage and schema-free ingestion so it can scale to high trace volumes 
+   without heavy indexing overhead.
 - **Mimir** provides horizontally scalable, Prometheus-compatible metrics storage with high cardinality support and effectively unlimited retention.
-- **Grafana** itself is the visualization and correlation layer, letting users jump seamlessly between a metric spike, related logs, and the exact trace causing an issue — all in one interface.
+- **Grafana** itself is the visualization and correlation layer, letting users jump seamlessly between a metric spike, related logs, and the exact trace causing an 
+  issue — all in one interface.
 
 **Competitive comparisons**
 
-The piece walks through component-level comparisons: Loki against Elasticsearch (cheaper/simpler vs. better full-text search), Tempo against Jaeger (better Grafana integration and cost efficiency), Mimir against Thanos (easier setup at scale), and Alloy against Fluent Bit (broader telemetry coverage vs. logs-only focus).
+The piece walks through component-level comparisons: Loki against Elasticsearch (cheaper/simpler vs. better full-text search), 
+                                                     Tempo against Jaeger (better Grafana integration and cost efficiency), 
+                                                     Mimir against Thanos (easier setup at scale), 
+                                                 and Alloy against Fluent Bit (broader telemetry coverage vs. logs-only focus).
 
 **Key takeaways**
 
-The author's central argument is that the Grafana stack's main advantages are vendor neutrality (avoiding lock-in), a composable/modular design (teams can adopt pieces incrementally), and cost efficiency (through label-based indexing and object storage), while still matching enterprise tools on performance and scalability. The tradeoff noted is that it requires more setup and technical expertise than fully managed commercial solutions.
+Grafana stack's main advantages are vendor neutrality (avoiding lock-in), a composable/modular design (teams can adopt pieces incrementally), 
+and cost efficiency (through label-based indexing and object storage), while still matching enterprise tools on performance and scalability. 
 
-The article closes by positioning the stack as well-suited for DevOps engineers, SREs, and cloud architects building observability for cloud-native, microservices-based systems.
+The tradeoff noted is that it requires more setup and technical expertise than fully managed commercial solutions.
 
 
 ### Three pillars of observability — metrics, logs, and traces. What are they
