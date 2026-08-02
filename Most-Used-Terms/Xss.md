@@ -1,0 +1,2 @@
+Cross-site scripting (XSS) is a web security vulnerability where malicious scripts are injected into trusted websites and executed in a victim's browser. 
+The three main types are Stored XSS, Reflected XSS, and DOM-based XSS

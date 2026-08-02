@@ -1,5 +1,7 @@
 # Thread contention 
-occurs when two or more threads attempt to access the same shared resource simultaneously, forcing the operating system or runtime to serialize their execution. This performance-killing bottleneck occurs because only one thread can manipulate or lock the resource at any given moment, forcing competing threads to stall, block, or spin while waiting for their turn.
+occurs when two or more threads attempt to access the same shared resource simultaneously, forcing the operating system or runtime to serialize their execution. 
+This performance-killing bottleneck occurs because only one thread can manipulate or lock the resource at any given moment, forcing competing threads to stall, 
+block, or spin while waiting for their turn.
 
 # Common Causes of Thread ContentionHeavy Locking: 
 Multiple threads frequently trying to acquire the exact same Mutex, Semaphore, or synchronized block.
