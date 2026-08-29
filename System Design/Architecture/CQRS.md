@@ -1,3 +1,4 @@
+Reading Material: https://www.geeksforgeeks.org/system-design/cqrs-command-query-responsibility-segregation/
 # What is CQRS?
 
 **CQRS (Command Query Responsibility Segregation)** means:
