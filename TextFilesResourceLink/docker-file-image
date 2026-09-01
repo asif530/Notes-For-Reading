@@ -1,0 +1,5 @@
+there is difference between jdk and alpine.
+alpine has the minimum required files inside the jdk which sometimes does not support all the libraries.
+
+
+

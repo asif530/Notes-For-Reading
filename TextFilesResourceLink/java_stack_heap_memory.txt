@@ -1,0 +1,13 @@
+Java Stack vs Heap Memory Allocation
+https://www.geeksforgeeks.org/java/java-stack-vs-heap-memory-allocation/
+
+What is a Memory Heap?
+https://www.geeksforgeeks.org/operating-systems/what-is-a-memory-heap/
+
+What's the connection between the heap used in dynamic memory allocation and the data structure
+https://stackoverflow.com/questions/2410683/whats-the-connection-between-the-heap-used-in-dynamic-memory-allocation-and-the
+
+How JVM Works - JVM Architecture
+https://www.geeksforgeeks.org/java/how-jvm-works-jvm-architecture/
+
+

@@ -1,0 +1,25 @@
+Platform threads, operating system (OS) threads, carrier threads
+multiplexed over a small number of carrier threads	
+Parking and Resuming threads & Virtual Threads
+Continuations and How They Make Virtual Threads Efficient
+
+
+How Java Virtual Threads Work Differently from Traditional Threads
+https://medium.com/@AlexanderObregon/how-java-virtual-threads-work-differently-from-traditional-threads-09485d033ae7   read. Good. read again
+
+Executor Framework
+https://medium.com/@reetesh043/master-java-executorservice-for-high-performance-concurrency-0a15f100a889  (need to use freedium)
+
+
+Executor submit method 
+https://medium.com/@AlexanderObregon/javas-executorservice-submit-method-explained-63562cc07edc
+
+use case for unbounded queue in Java Executors
+https://stackoverflow.com/questions/53913601/what-is-the-use-case-for-unbounded-queue-in-java-executors
+
+
+
+
+	
+
+

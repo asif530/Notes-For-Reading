@@ -1,0 +1,5 @@
+Gradle 9.0+ enforces stricter project validation:
+If a subproject is declared in settings.gradle but the corresponding directory doesn’t exist, the build fails immediately.
+Older Gradle versions used to silently skip it.
+
+gradle and gradle wrapper are different.

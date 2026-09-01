@@ -1,0 +1,6 @@
+Vault access
+
+export VAULT_ADDR=<address>
+export VAULT_TOKEN=<token>
+export VAULT_SKIP_VERIFY=true
+vault kv get -mount="x" "y"

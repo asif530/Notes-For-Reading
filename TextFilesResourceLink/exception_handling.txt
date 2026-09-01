@@ -1,0 +1,7 @@
+Advanced Exception Handling in Java
+https://medium.com/@AlexanderObregon/advanced-exception-handling-in-java-219bfc6379c8
+
+When custom exception is written in spring-boot which extends runtimeException, when thrown it will be caught by the implementation.
+If a custom exception is written which already is an existing exception in springboot, if exception occurs it will first go to the spring implemented class and then falls to the custom class.
+
+

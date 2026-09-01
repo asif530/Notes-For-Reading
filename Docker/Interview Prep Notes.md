@@ -1,5 +1,13 @@
 # Docker Interview Prep Notes
 
+# Explain these 
+Docker Client
+Docker Engine API
+Docker Daemon
+Docker Registry/Hub
+Docker Images
+Docker containers
+
 ## Build Cache Fundamentals
 
 **Q: How does Docker's build cache work at a high level?**
@@ -79,3 +87,6 @@ Mainly in CI/CD where builders are ephemeral and lose local cache between runs; 
 
 - `mode=min`: caches only final-image layers (smaller, faster transfer).
 - `mode=max`: caches all intermediate layers (larger, more likely to hit cache on future builds).
+
+** What is the e-flag in docker?
+Passed with the docker run command. The -e flag indicates setting an environmental variable in the container, 

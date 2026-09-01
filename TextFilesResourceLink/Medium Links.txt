@@ -1,0 +1,35 @@
+https://medium.com/@denhox/sharing-data-between-microservices-fe7fb9471208
+https://ondrej-kvasnovsky.medium.com/how-to-avoid-dtos-in-spring-jpa-53f34189c3bc
+https://archive.is/f7JBx
+https://medium.com/@anilabha91/analyzing-a-java-heap-dump-63330bca5d4d
+https://towardsdev.com/goodbye-autowired-why-spring-boot-is-moving-towards-constructor-injection-b1fcabc75bfd
+https://archive.is/Md6ce => https://medium.com/@ShantKhayalian/server-sent-events-sse-and-long-polling-in-spring-boot-real-time-data-without-websockets-da3b3a4bb4f5
+https://www.geeksforgeeks.org/generics-in-java/
+https://www.geeksforgeeks.org/java-lang-threadlocal-class-java/
+https://www.digitalocean.com/community/tutorials/java-threadlocal-example
+https://www.youtube.com/watch?v=Vcsk9mDguW8&list=PLPMTNxKkE3vezbxcZj0I2B4FiO2DHpMRW
+https://www.youtube.com/watch?v=Xx588nbshlM
+https://www.youtube.com/watch?v=s9Qh9fWeOAk&t=3s
+https://www.youtube.com/watch?v=gXmznGEW9vo
+https://stackshare.io/uber-technologies/uber
+
+https://archive.is/fDVUm#selection-1161.12-1161.17
+https://archive.is/Z2V7W
+https://archive.is/FfDxJ
+https://archive.is/CzqDF
+https://archive.is/Mv6NY
+https://archive.is/hniTH
+https://archive.is/medium.com/@kanishksinghpujari/this-one-kafka-design-pattern-changed-everything-for-us-22ad33ab2e3a
+https://medium.com/@mrtkrkrt/apache-camel-in-spring-boot-318f836ed986
+https://www.javaguides.net/2025/04/microservices-are-mess-without-these-java-design-patterns.html
+https://www.javaguides.net/2025/03/bulkhead-pattern-in-microservices.html
+
+
+https://www.youtube.com/watch?v=BGUVZYZpcx8
+https://phoenixnap.com/kb/docker-environment-variables
+
+
+
+    
+Elasticsearch Too many request...read_only_delete_allow...disk usage exceeded    
+

@@ -1,0 +1,60 @@
+Heap memory
+I Found the Memory Leak That Was Killing Our Java App — You Won’t Believe What It is!
+https://medium.com/@thecodealchemistX/i-found-the-memory-leak-that-was-killing-our-java-app-you-wont-believe-what-it-is-818e3dbe6d15
+
+If You Still Don’t Know How Java Heap Works, This Will Change Everything
+https://medium.com/@thecodealchemistX/if-you-still-dont-know-how-java-heap-works-this-will-change-everything-afd72a9f6d62
+
+
+Junit
+Why Your JUnit Tests Are So Slow: The Hidden Setting You Need to Change
+https://medium.com/@thecodealchemistX/why-your-junit-tests-are-so-slow-the-hidden-setting-you-need-to-change-04373efd03b3
+
+
+Kafka
+The Kafka Partition Trick Top Engineers Use for Lightning-Fast Processing
+https://medium.com/@thecodealchemistX/the-kafka-partition-trick-top-engineers-use-for-lightning-fast-processing-7363277e534e
+
+
+cache-springboot
+The 7 Spring Boot Caching Techniques That 9/10 Developers Ignore — Are You Missing Out?
+https://medium.com/@thecodealchemistX/the-7-spring-boot-caching-techniques-that-9-10-developers-ignore-are-you-missing-out-402046a941e8
+
+
+
+50 Java 8 Lambda Snippets Every Developer Should Know
+https://archive.is/c73JL
+
+
+How to Write Less Java Code and Do More (Effective Java Hacks)
+https://archive.is/ssU4C
+
+
+You only need 25 questions to learn all the coding interview patterns
+https://archive.is/wRZ5X
+
+
+Springboot Database Locking
+Optimistic Locking vs Pessimistic Locking: Managing Concurrent Access
+https://medium.com/@abhirup.acharya009/managing-concurrent-access-optimistic-locking-vs-pessimistic-locking-0f6a64294db7
+
+
+Optimistic Locking in JPA
+https://www.baeldung.com/jpa-optimistic-locking
+
+Understanding Optimistic Locking: A Key to Handling Data Conflicts
+https://medium.com/@gaddamnaveen192/understanding-optimistic-locking-a-key-to-handling-data-conflicts-63c086b850d5
+
+
+How Spring Boot + JPA Pessimistic Locking Solves Overselling Once and For All
+https://medium.com/@gaddamnaveen192/how-spring-boot-jpa-pessimistic-locking-solves-overselling-once-and-for-all-a250086ba529
+
+
+Postgres concurrency, locks and isolation levels
+https://medium.com/@zeeshan.shamsuddeen/postgres-concurrency-locks-and-isolation-levels-ef222204484d
+
+
+Unnamed Patterns and Variables in Java
+https://www.baeldung.com/java-unnamed-patterns-variables
+
+
