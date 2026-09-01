@@ -1,0 +1,14 @@
+services:
+  redis:
+    image: 'redis/redis-stack:latest'
+    restart: always
+    ports:
+      - '6379:6379'
+      - '8001:8001'
+    volumes:
+      - '/home/pial/Redis-Data:/root/redis'
+      - '/home/pial/Redis-Data/redis.conf:/usr/local/etc/redis/redis.conf'
+    environment:
+      - REDIS_PASSWORD=123
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16

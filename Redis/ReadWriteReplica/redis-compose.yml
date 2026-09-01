@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  redis-master:
+    image: redis:7.2
+    container_name: redis-master
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - redisnet
+
+  redis-replica:
+    image: redis:7.2
+    container_name: redis-replica
+    depends_on:
+      - redis-master
+    ports:
+      - "6380:6379"
+    command: ["redis-server", "--appendonly", "yes", "--replicaof", "redis-master", "6379"]
+    networks:
+      - redisnet
+
+  redis-insight:
+    image: redis/redisinsight:2.70
+    container_name: redis-insight
+    ports:
+      - "5540:5540"
+    networks:
+      - redisnet
+
+networks:
+  redisnet:
+    driver: bridge
+    
+# Redis insight has 2 versions
+# v1 and v2. Here v2 is used. It uses port 5540.
+# v1 suppossed to use port 8001. But its not tested.
+# While connecting to redis and redis insight run by docker two important thing:
+# 1. use redis continer name as host
+# 2. use default as Username (if no username and password is set)

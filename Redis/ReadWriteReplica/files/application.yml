@@ -1,0 +1,12 @@
+app:
+  redis-cache:
+    read:
+      host: ${REDIS_READ_REPLICA_HOST}
+      port: ${REDIS_READ_REPLICA_PORT}
+      password: ${REDIS_READ_REPLICA_PASSWORD}
+    write:
+      host: ${REDIS_WRITE_REPLICA_HOST}
+      port: ${REDIS_WRITE_REPLICA_PORT}
+      password: ${REDIS_WRITE_REPLICA_PASSWORD}
+    expiry-in-seconds: ${REDIS_CACHE_EXPIRY_IN_SECONDS}
+    expiry-in-days: 1
